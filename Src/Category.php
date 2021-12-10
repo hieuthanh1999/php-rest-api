@@ -46,7 +46,7 @@ class Category {
   {
     $query = "
       SELECT
-        id, name, reg_date
+        id, name, url, reg_date
       FROM
         category;
     ";
@@ -83,9 +83,9 @@ class Category {
 
     $query = "
       INSERT INTO category
-        (name)
+        (name, url)
       VALUES
-        (:name);
+        (:name, :url);
     ";
 
     try {
@@ -120,7 +120,8 @@ class Category {
     $statement = "
       UPDATE category
       SET
-      name = :name
+      name = :name,
+      url = :url
       WHERE id = :id;
     ";
 
@@ -128,7 +129,8 @@ class Category {
       $statement = $this->db->prepare($statement);
       $statement->execute(array(
         'id' => (int) $id,
-        'name' => $input['name']
+        'name' => $input['name'],
+        'url' => $input['url']
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -168,7 +170,7 @@ class Category {
   {
     $query = "
       SELECT
-        id, name
+        id, name, url
       FROM
         category
       WHERE id = :id;
