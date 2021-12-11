@@ -83,9 +83,9 @@ class Posts {
 
     $query = "
       INSERT INTO posts
-        id_user, id_category, user,	title,	image,	audio,	content,	numview,	numcomment,	numlove,	islove,	isgroup,	idgroup,	ranker
+       (id_user, id_category, user,	title,	image,	audio,	content,	numview,	numcomment,	numlove,	islove,	isgroup,	idgroup,	ranker)
       VALUES
-      :id_user, :id_category, :user,	:title,	:image,	:audio,	:content,	:numview,	:numcomment,	:numlove,	:islove,	:isgroup,	:idgroup,	:ranker;
+      (:id_user, :id_category, :user,	:title,	:image,	:audio,	:content,	:numview,	:numcomment,	:numlove,	:islove,	:isgroup,	:idgroup,	:ranker);
     ";
 
     try {
@@ -225,12 +225,12 @@ class Posts {
 
   private function validatePost($input)
   {
-      if (! isset($input['title'])) {
-        return false;
-      }
-      if (! isset($input['body'])) {
-        return false;
-      }
+      // if (! isset($input['title'])) {
+      //   return false;
+      // }
+      // if (! isset($input['body'])) {
+      //   return false;
+      // }
 
     return true;
   }
