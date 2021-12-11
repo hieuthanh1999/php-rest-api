@@ -91,7 +91,8 @@ class Category {
     try {
       $statement = $this->db->prepare($query);
       $statement->execute(array(
-        'name' => $input['name']
+        'name' => $input['name'],
+        'url' => $input['url']
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
