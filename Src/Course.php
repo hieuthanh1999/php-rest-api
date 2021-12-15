@@ -1,36 +1,36 @@
 <?php
 namespace Src;
 
-class Category {
+class Course {
   private $db;
   private $requestMethod;
-  private $categoryId;
+  private $courseId;
 
-  public function __construct($db, $requestMethod, $categoryId)
+  public function __construct($db, $requestMethod, $courseId)
   {
     $this->db = $db;
     $this->requestMethod = $requestMethod;
-    $this->categoryId = $categoryId;
+    $this->courseId = $courseId;
   }
 
   public function processRequest()
   {
     switch ($this->requestMethod) {
       case 'GET':
-        if ($this->categoryId) {
-          $response = $this->getCategory($this->categoryId);
+        if ($this->courseId) {
+          $response = $this->getCourse($this->courseId);
         } else {
-          $response = $this->getAllCategorys();
+          $response = $this->getAllCourses();
         };
         break;
       case 'POST':
-        $response = $this->createCategory();
+        $response = $this->createCourse();
         break;
       case 'PUT':
-        $response = $this->updateCategory($this->categoryId);
+        $response = $this->updateCourse($this->courseId);
         break;
       case 'DELETE':
-        $response = $this->deleteCategory($this->categoryId);
+        $response = $this->deleteCourse($this->courseId);
         break;
       default:
         $response = $this->notFoundResponse();
@@ -42,13 +42,13 @@ class Category {
     }
   }
 
-  private function getAllCategorys()
+  private function getAllCourses()
   {
     $query = "
       SELECT
-        *
+        id, name, totalUser, image, description, reg_date
       FROM
-        category;
+        course;
     ";
 
     try {
@@ -63,7 +63,7 @@ class Category {
     return $response;
   }
 
-  private function getCategory($id)
+  private function getCourse($id)
   {
     $result = $this->find($id);
     if (! $result) {
@@ -74,25 +74,26 @@ class Category {
     return $response;
   }
 
-  private function createCategory()
+  private function createCourse()
   {
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
-    if (! $this->validateCategory($input)) {
+    if (! $this->validatecourse($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $query = "
-      INSERT INTO category
-        (name, 	type_category, description)
+      INSERT INTO course
+        (name, totalUser, image, description)
       VALUES
-        (:name, :type_category, :description);
+        (:name, :totalUser, :image, :description);
     ";
 
     try {
       $statement = $this->db->prepare($query);
       $statement->execute(array(
         'name' => $input['name'],
-        'type_category' => $input['type_category'],
+        'totalUser' => $input['totalUser'],
+        'image' => $input['image'],
         'description' => $input['description']
       ));
       $statement->rowCount();
@@ -105,7 +106,7 @@ class Category {
     return $response;
   }
 
-  private function updateCategory($id)
+  private function updateCourse($id)
   {
     $result = $this->find($id);
 
@@ -115,16 +116,14 @@ class Category {
 
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
 
-    if (! $this->validateCategory($input)) {
+    if (! $this->validatecourse($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $statement = "
-      UPDATE category
+      UPDATE course
       SET
-      name = :name,
-      type_category = :type_category,
-      description = :description
+      name = :name, totalUser = :totalUser, image = :image, description = :description
       WHERE id = :id;
     ";
 
@@ -133,7 +132,8 @@ class Category {
       $statement->execute(array(
         'id' => (int) $id,
         'name' => $input['name'],
-        'type_category' => $input['type_category'],
+        'totalUser' => $input['totalUser'],
+        'image' => $input['image'],
         'description' => $input['description']
       ));
       $statement->rowCount();
@@ -141,11 +141,11 @@ class Category {
       exit($e->getMessage());
     }
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
-    $response['body'] = json_encode(array('message' => 'Category Updated!'));
+    $response['body'] = json_encode(array('message' => 'course Updated!'));
     return $response;
   }
 
-  private function deleteCategory($id)
+  private function deleteCourse($id)
   {
     $result = $this->find($id);
 
@@ -154,7 +154,7 @@ class Category {
     }
 
     $query = "
-      DELETE FROM category
+      DELETE FROM course
       WHERE id = :id;
     ";
 
@@ -173,10 +173,8 @@ class Category {
   public function find($id)
   {
     $query = "
-      SELECT
-        *
-      FROM
-        category
+      SELECT * FROM
+        course
       WHERE id = :id;
     ";
 
@@ -190,10 +188,16 @@ class Category {
     }
   }
 
-  private function validateCategory($input)
+  private function validateCourse($input)
   {
     if (! isset($input['name'])) {
       return false;
+    }
+    if (! isset($input['image'])) {
+    return false;
+    }
+    if (! isset($input['description'])) {
+    return false;
     }
     return true;
   }

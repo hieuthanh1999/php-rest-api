@@ -1,36 +1,36 @@
 <?php
 namespace Src;
 
-class Category {
+class PodCast {
   private $db;
   private $requestMethod;
-  private $categoryId;
+  private $podCastId;
 
-  public function __construct($db, $requestMethod, $categoryId)
+  public function __construct($db, $requestMethod, $podCastId)
   {
     $this->db = $db;
     $this->requestMethod = $requestMethod;
-    $this->categoryId = $categoryId;
+    $this->podCastId = $podCastId;
   }
 
   public function processRequest()
   {
     switch ($this->requestMethod) {
       case 'GET':
-        if ($this->categoryId) {
-          $response = $this->getCategory($this->categoryId);
+        if ($this->podCastId) {
+          $response = $this->getPodCast($this->podCastId);
         } else {
-          $response = $this->getAllCategorys();
+          $response = $this->getAllPodCasts();
         };
         break;
       case 'POST':
-        $response = $this->createCategory();
+        $response = $this->createPodCast();
         break;
       case 'PUT':
-        $response = $this->updateCategory($this->categoryId);
+        $response = $this->updatePodCast($this->podCastId);
         break;
       case 'DELETE':
-        $response = $this->deleteCategory($this->categoryId);
+        $response = $this->deletePodCast($this->podCastId);
         break;
       default:
         $response = $this->notFoundResponse();
@@ -42,13 +42,13 @@ class Category {
     }
   }
 
-  private function getAllCategorys()
+  private function getAllPodCasts()
   {
     $query = "
       SELECT
         *
       FROM
-        category;
+        podcast;
     ";
 
     try {
@@ -63,7 +63,7 @@ class Category {
     return $response;
   }
 
-  private function getCategory($id)
+  private function getPodCast($id)
   {
     $result = $this->find($id);
     if (! $result) {
@@ -74,26 +74,29 @@ class Category {
     return $response;
   }
 
-  private function createCategory()
+  private function createPodCast()
   {
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
-    if (! $this->validateCategory($input)) {
+    if (! $this->validatePodCast($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $query = "
-      INSERT INTO category
-        (name, 	type_category, description)
+      INSERT INTO podcast
+       (id_user, id_course,	title,	image,	audio,	content)
       VALUES
-        (:name, :type_category, :description);
+      (:id_user, :id_course,	:title,	:image,	:audio,	:content);
     ";
 
     try {
       $statement = $this->db->prepare($query);
       $statement->execute(array(
-        'name' => $input['name'],
-        'type_category' => $input['type_category'],
-        'description' => $input['description']
+        'id_user'	=> $input['id_user'],
+        'id_course'	=> $input['id_course'],
+        'title'	=> $input['title'],
+        'image'	=> $input['image'],
+        'audio'	=> $input['audio'],
+        'content'	=> $input['content']
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -101,11 +104,11 @@ class Category {
     }
 
     $response['status_code_header'] = 'HTTP/1.1 201 Created';
-    $response['body'] = json_encode(array('message' => 'Post Created'));
+    $response['body'] = json_encode(array('message' => 'podCast Created'));
     return $response;
   }
 
-  private function updateCategory($id)
+  private function updatePodCast($id)
   {
     $result = $this->find($id);
 
@@ -115,16 +118,19 @@ class Category {
 
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
 
-    if (! $this->validateCategory($input)) {
+    if (! $this->validatePodCast($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $statement = "
-      UPDATE category
+      UPDATE podcast
       SET
-      name = :name,
-      type_category = :type_category,
-      description = :description
+        id_user = :id_user,
+        id_course = :id_course,
+        title = :title,
+        image = :image,
+        audio  = :audio,
+        content = :content
       WHERE id = :id;
     ";
 
@@ -132,20 +138,23 @@ class Category {
       $statement = $this->db->prepare($statement);
       $statement->execute(array(
         'id' => (int) $id,
-        'name' => $input['name'],
-        'type_category' => $input['type_category'],
-        'description' => $input['description']
+        'id_user'	=> $input['id_user'],
+        'id_course'	=> $input['id_course'],
+        'title'	=> $input['title'],
+        'image'	=> $input['image'],
+        'audio'	=> $input['audio'],
+        'content'	=> $input['content']
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
       exit($e->getMessage());
     }
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
-    $response['body'] = json_encode(array('message' => 'Category Updated!'));
+    $response['body'] = json_encode(array('message' => 'podCast Updated!'));
     return $response;
   }
 
-  private function deleteCategory($id)
+  private function deletePodCast($id)
   {
     $result = $this->find($id);
 
@@ -154,7 +163,7 @@ class Category {
     }
 
     $query = "
-      DELETE FROM category
+      DELETE FROM podcast
       WHERE id = :id;
     ";
 
@@ -166,7 +175,7 @@ class Category {
       exit($e->getMessage());
     }
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
-    $response['body'] = json_encode(array('message' => 'Post Deleted!'));
+    $response['body'] = json_encode(array('message' => 'podCast Deleted!'));
     return $response;
   }
 
@@ -176,7 +185,7 @@ class Category {
       SELECT
         *
       FROM
-        category
+        podcast
       WHERE id = :id;
     ";
 
@@ -190,11 +199,15 @@ class Category {
     }
   }
 
-  private function validateCategory($input)
+  private function validatePodCast($input)
   {
-    if (! isset($input['name'])) {
-      return false;
-    }
+      // if (! isset($input['title'])) {
+      //   return false;
+      // }
+      // if (! isset($input['body'])) {
+      //   return false;
+      // }
+
     return true;
   }
 

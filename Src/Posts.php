@@ -46,7 +46,7 @@ class Posts {
   {
     $query = "
       SELECT
-        id, id_user, id_category, user,	title,	image,	audio,	content,	numview,	numcomment,	numlove,	islove,	isgroup,	idgroup,	ranker,	reg_date
+       *
       FROM
         posts;
     ";
@@ -83,9 +83,9 @@ class Posts {
 
     $query = "
       INSERT INTO posts
-       (id_user, id_category, user,	title,	image,	audio,	content,	numview,	numcomment,	numlove,	islove,	isgroup,	idgroup,	ranker)
+       (id_user, id_category, user,	title,	image,	content,	numview,	numcomment,	numlove,	islove,	isgroup,	idgroup,	ranker)
       VALUES
-      (:id_user, :id_category, :user,	:title,	:image,	:audio,	:content,	:numview,	:numcomment,	:numlove,	:islove,	:isgroup,	:idgroup,	:ranker);
+      (:id_user, :id_category, :user,	:title,	:image,	:content,	:numview,	:numcomment,	:numlove,	:islove,	:isgroup,	:idgroup,	:ranker);
     ";
 
     try {
@@ -96,7 +96,6 @@ class Posts {
         'user'	=> $input['user'],
         'title'	=> $input['title'],
         'image'	=> $input['image'],
-        'audio'	=> $input['audio'],
         'content'	=> $input['content'],
         'numview'	=> $input['numview'],
         'numcomment'	=> $input['numcomment'],
@@ -136,17 +135,16 @@ class Posts {
         id_user = :id_user,
         id_category  = :id_category,
         user = :user,
-        title = :title
+        title = :title,
         image = :image,
-        audio  = :audio,
         content = :content,
-        numview = :numview
+        numview = :numview,
         numcomment = :numcomment,
         numlove  = :numlove,
         islove = :islove,
-        isgroup = :isgroup
+        isgroup = :isgroup,
         idgroup = :idgroup,
-        ranker  = :ranker,
+        ranker  = :ranker
       WHERE id = :id;
     ";
 
@@ -159,7 +157,6 @@ class Posts {
         'user'	=> $input['user'],
         'title'	=> $input['title'],
         'image'	=> $input['image'],
-        'audio'	=> $input['audio'],
         'content'	=> $input['content'],
         'numview'	=> $input['numview'],
         'numcomment'	=> $input['numcomment'],
@@ -207,7 +204,7 @@ class Posts {
   {
     $query = "
       SELECT
-        id, id_user, id_category, user,	title,	image,	audio,	content,	numview,	numcomment,	numlove,	islove,	isgroup,	idgroup,	ranker
+       *
       FROM
         posts
       WHERE id = :id;
