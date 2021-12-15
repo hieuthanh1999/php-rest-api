@@ -83,15 +83,16 @@ class PodCast {
 
     $query = "
       INSERT INTO podcast
-       (id_user, id_course,	title,	image,	audio,	content)
+       (id_user, id_category , id_course,	title,	image,	audio,	content)
       VALUES
-      (:id_user, :id_course,	:title,	:image,	:audio,	:content);
+        (:id_user, :id_category, :id_course,	:title,	:image,	:audio,	:content);
     ";
 
     try {
       $statement = $this->db->prepare($query);
       $statement->execute(array(
         'id_user'	=> $input['id_user'],
+        'id_category'	=> $input['id_category'],
         'id_course'	=> $input['id_course'],
         'title'	=> $input['title'],
         'image'	=> $input['image'],
