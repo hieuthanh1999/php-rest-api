@@ -84,9 +84,9 @@ class Comment {
     $query = "
       INSERT INTO 
       comment
-        (id_user, comment)
+        (id_user, comment, id_blog)
       VALUES
-      (:id_user, :comment)
+      (:id_user, :comment, :id_blog)
     ";
 
     try {
@@ -94,6 +94,7 @@ class Comment {
       $statement->execute(array(
         'id_user' => $input['id_user'],
        'comment' => $input['comment'],
+       'id_blog' => $input['id_blog'],
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -125,6 +126,7 @@ class Comment {
       SET
       id_user = :id_user,
       comment = :comment,
+      id_blog = :id_blog
       WHERE id = :id;
     ";
 
@@ -134,6 +136,7 @@ class Comment {
         'id' => (int) $id,
         'id_user' => $input['id_user'],
         'comment' => $input['comment'],
+        'id_blog' => $input['id_blog'],
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -177,7 +180,6 @@ class Comment {
       SELECT
         *
       FROM
-        
       comment
       WHERE id = :id;
     ";

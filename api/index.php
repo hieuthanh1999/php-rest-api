@@ -6,6 +6,7 @@ use Src\Posts;
 use Src\Course;
 use Src\PodCast;
 use Src\Comment;
+use Src\Rank;
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -39,6 +40,9 @@ switch ($uri[1]){
       break;
   case 'comment':
     $controller = new Comment($dbConnection, $requestMethod, $id);
+    break;
+  case 'rank':
+    $controller = new Rank($dbConnection, $requestMethod, $id);
     break;
   default:
       header("HTTP/1.1 404 Not Found");
