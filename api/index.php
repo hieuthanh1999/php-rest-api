@@ -8,11 +8,10 @@ use Src\PodCast;
 use Src\Comment;
 use Src\Rank;
 
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
-header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, X-Requested-With");
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Allow: GET, POST, OPTIONS, PUT, DELETE");
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -22,6 +21,9 @@ if (isset($uri[2])) {
     $id = (int) $uri[2];
 }
 $requestMethod = $_SERVER["REQUEST_METHOD"]; 
+if($requestMethod == "OPTIONS") {
+  die();
+}
 switch ($uri[1]){
   case 'user':
     $controller = new User($dbConnection, $requestMethod, $id);
