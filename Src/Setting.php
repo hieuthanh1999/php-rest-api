@@ -1,7 +1,7 @@
 <?php
 namespace Src;
 
-class User {
+class Setting {
   private $db;
   private $requestMethod;
   private $userId;
@@ -18,19 +18,19 @@ class User {
     switch ($this->requestMethod) {
       case 'GET':
         if ($this->userId) {
-          $response = $this->getUser($this->userId); //get data id đó
+          $response = $this->getSetting($this->userId); //get data id đó
         } else {
-          $response = $this->getAllUsers(); // get data tất cả
+          $response = $this->getAllSetting(); // get data tất cả
         };
         break;
       case 'POST':
-        $response = $this->createUser();
+        $response = $this->createSetting();
         break;
       case 'PUT':
-        $response = $this->updateUser($this->userId);
+        $response = $this->updateSetting($this->userId);
         break;
       case 'DELETE':
-        $response = $this->deleteUser($this->userId);
+        $response = $this->deleteSetting($this->userId);
         break;
       default:
         $response = $this->notFoundResponse();
@@ -42,13 +42,13 @@ class User {
     }
   }
 
-  private function getAllUsers()
+  private function getAllSetting()
   {
     $query = "
       SELECT
-        id, name, email, password, phone, avatar, type, ranker, reg_date
+        *
       FROM
-        user;
+        setting;
     ";
 
     try {
@@ -63,7 +63,7 @@ class User {
     return $response;
   }
 
-  private function getUser($id)
+  private function getSetting($id)
   {
     $result = $this->find($id);
     if (! $result) {
@@ -74,7 +74,7 @@ class User {
     return $response;
   }
 
-  private function createUser()
+  private function createSetting()
   {
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
     if (! $this->validateUser($input)) {
@@ -82,22 +82,17 @@ class User {
     }
 
     $query = "
-      INSERT INTO user
-        (name, email, password, phone, avatar, type, ranker)
+      INSERT INTO setting
+        (id_user, notification_blog)
       VALUES
-        (:name, :email, :password, :phone, :avatar, :type, :ranker);
+        (:id_user, :notification_blog);
     ";
 
     try {
       $statement = $this->db->prepare($query);
       $statement->execute(array(
-        'name' => $input['name'],
-        'email'  => $input['email'],
-        'password' => $input['password'],
-        'phone' => $input['phone'],
-        'avatar' => $input['avatar'],
-        'type' => $input['type'],
-        'ranker' => $input['ranker'],
+        'id_user' => $input['id_user'],
+        'notification_blog'  => $input['notification_blog'],
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -109,7 +104,7 @@ class User {
     return $response;
   }
 
-  private function updateUser($id)
+  private function updateSetting($id)
   {
     $result = $this->find($id);
 
@@ -119,14 +114,14 @@ class User {
 
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
 
-    if (! $this->validateUser($input)) {
+    if (! $this->validateSetting($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $statement = "
-      UPDATE user
+      UPDATE setting
       SET
-      name = :name, email = :email, password = :password, phone = :phone, avatar = :avatar, type = :type, ranker = :ranker
+      id_user = :id_user, notification_blog = :notification_blog
       WHERE id = :id;
     ";
 
@@ -134,13 +129,8 @@ class User {
       $statement = $this->db->prepare($statement);
       $statement->execute(array(
         'id' => (int) $id,
-        'name' => $input['name'],
-        'email'  => $input['email'],
-        'password' => $input['password'],
-        'phone' => $input['phone'],
-        'avatar' => $input['avatar'],
-        'type' => $input['type'],
-        'ranker' => $input['ranker'],
+        'id_user' => $input['id_user'],
+        'notification_blog'  => $input['notification_blog'],
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -151,7 +141,7 @@ class User {
     return $response;
   }
 
-  private function deleteUser($id)
+  private function deleteSetting($id)
   {
     $result = $this->find($id);
 
@@ -160,7 +150,7 @@ class User {
     }
 
     $query = "
-      DELETE FROM user
+      DELETE FROM setting
       WHERE id = :id;
     ";
 
@@ -180,9 +170,9 @@ class User {
   {
     $query = "
       SELECT
-        id, name, email, password, phone, avatar, type, ranker, reg_date
+        *
       FROM
-        user
+        setting
       WHERE id = :id;
     ";
 
@@ -196,14 +186,14 @@ class User {
     }
   }
 
-  private function validateUser($input)
+  private function validateSetting($input)
   {
-    if (! isset($input['email'])) {
-      return false;
-    }
-    if (! isset($input['password'])) {
-      return false;
-    }
+    // if (! isset($input['email'])) {
+    //   return false;
+    // }
+    // if (! isset($input['password'])) {
+    //   return false;
+    // }
     return true;
   }
 
