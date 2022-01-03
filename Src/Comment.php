@@ -48,7 +48,7 @@ class Comment {
       SELECT
         *
       FROM
-      comment;
+      comment ORDER BY id DESC;
     ";
 
     try {

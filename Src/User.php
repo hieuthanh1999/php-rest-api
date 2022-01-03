@@ -48,7 +48,7 @@ class User {
       SELECT
         id, name, email, password, phone, avatar, type, ranker, reg_date
       FROM
-        user;
+        user ORDER BY id DESC;
     ";
 
     try {

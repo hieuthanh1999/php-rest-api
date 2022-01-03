@@ -1,36 +1,36 @@
 <?php
 namespace Src;
 
-class Course {
+class UpdateRank {
   private $db;
   private $requestMethod;
-  private $courseId;
+  private $userId;
 
-  public function __construct($db, $requestMethod, $courseId)
+  public function __construct($db, $requestMethod, $userId)
   {
     $this->db = $db;
     $this->requestMethod = $requestMethod;
-    $this->courseId = $courseId;
+    $this->userId = $userId;
   }
 
   public function processRequest()
   {
     switch ($this->requestMethod) {
       case 'GET':
-        if ($this->courseId) {
-          $response = $this->getCourse($this->courseId);
+        if ($this->userId) {
+          $response = $this->getUser($this->userId); //get data id đó
         } else {
-          $response = $this->getAllCourses();
+          $response = $this->getAllUsers(); // get data tất cả
         };
         break;
       case 'POST':
-        $response = $this->createCourse();
+        $response = $this->createUser();
         break;
       case 'PUT':
-        $response = $this->updateCourse($this->courseId);
+        $response = $this->updateUser($this->userId);
         break;
       case 'DELETE':
-        $response = $this->deleteCourse($this->courseId);
+        $response = $this->deleteUser($this->userId);
         break;
       default:
         $response = $this->notFoundResponse();
@@ -42,13 +42,13 @@ class Course {
     }
   }
 
-  private function getAllCourses()
+  private function getAllUsers()
   {
     $query = "
       SELECT
-        id, name, totalUser, image, description, reg_date
+      DISTINCT id_user, id_blog
       FROM
-        course ORDER BY id DESC;
+        updaterank ORDER BY id DESC;
     ";
 
     try {
@@ -63,7 +63,7 @@ class Course {
     return $response;
   }
 
-  private function getCourse($id)
+  private function getUser($id)
   {
     $result = $this->find($id);
     if (! $result) {
@@ -74,27 +74,25 @@ class Course {
     return $response;
   }
 
-  private function createCourse()
+  private function createUser()
   {
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
-    if (! $this->validatecourse($input)) {
+    if (! $this->validateUser($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $query = "
-      INSERT INTO course
-        (name, totalUser, image, description)
+      INSERT INTO updaterank
+        (id_blog, id_user)
       VALUES
-        (:name, :totalUser, :image, :description);
+        (:id_blog, :id_user);
     ";
 
     try {
       $statement = $this->db->prepare($query);
       $statement->execute(array(
-        'name' => $input['name'],
-        'totalUser' => $input['totalUser'],
-        'image' => $input['image'],
-        'description' => $input['description']
+        'id_blog' => $input['id_blog'],
+        'id_user'  => $input['id_user']
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
@@ -106,7 +104,7 @@ class Course {
     return $response;
   }
 
-  private function updateCourse($id)
+  private function updateUser($id)
   {
     $result = $this->find($id);
 
@@ -116,14 +114,14 @@ class Course {
 
     $input = (array) json_decode(file_get_contents('php://input'), TRUE);
 
-    if (! $this->validatecourse($input)) {
+    if (! $this->validateUser($input)) {
       return $this->unprocessableEntityResponse();
     }
 
     $statement = "
-      UPDATE course
+      UPDATE updaterank
       SET
-      name = :name, totalUser = :totalUser, image = :image, description = :description
+        id_blog = :id_blog, id_user = :id_user, 
       WHERE id = :id;
     ";
 
@@ -131,21 +129,19 @@ class Course {
       $statement = $this->db->prepare($statement);
       $statement->execute(array(
         'id' => (int) $id,
-        'name' => $input['name'],
-        'totalUser' => $input['totalUser'],
-        'image' => $input['image'],
-        'description' => $input['description']
+        'id_blog' => $input['id_blog'],
+        'id_user'  => $input['id_user']
       ));
       $statement->rowCount();
     } catch (\PDOException $e) {
       exit($e->getMessage());
     }
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
-    $response['body'] = json_encode(array('message' => 'course Updated!'));
+    $response['body'] = json_encode(array('message' => 'User Updated!'));
     return $response;
   }
 
-  private function deleteCourse($id)
+  private function deleteUser($id)
   {
     $result = $this->find($id);
 
@@ -154,7 +150,7 @@ class Course {
     }
 
     $query = "
-      DELETE FROM course
+      DELETE FROM updaterank
       WHERE id = :id;
     ";
 
@@ -173,8 +169,10 @@ class Course {
   public function find($id)
   {
     $query = "
-      SELECT * FROM
-        course
+      SELECT
+       *
+      FROM
+      updaterank
       WHERE id = :id;
     ";
 
@@ -188,17 +186,14 @@ class Course {
     }
   }
 
-  private function validateCourse($input)
+  private function validateUser($input)
   {
-    if (! isset($input['name'])) {
-      return false;
-    }
-    if (! isset($input['image'])) {
-    return false;
-    }
-    if (! isset($input['description'])) {
-    return false;
-    }
+    // if (! isset($input['email'])) {
+    //   return false;
+    // }
+    // if (! isset($input['password'])) {
+    //   return false;
+    // }
     return true;
   }
 

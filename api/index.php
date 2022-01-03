@@ -9,6 +9,7 @@ use Src\Comment;
 use Src\Rank;
 use Src\Setting;
 use Src\UserLove;
+use Src\UpdateRank;
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
@@ -54,9 +55,12 @@ switch ($uri[1]){
   case 'setting':
     $controller = new Setting($dbConnection, $requestMethod, $id);
     break;
-    case 'userlove':
-      $controller = new UserLove($dbConnection, $requestMethod, $id);
-      break;
+  case 'userlove':
+    $controller = new UserLove($dbConnection, $requestMethod, $id);
+    break;
+  case 'updaterank':
+    $controller = new UpdateRank($dbConnection, $requestMethod, $id);
+    break;
   default:
       header("HTTP/1.1 404 Not Found");
       exit();

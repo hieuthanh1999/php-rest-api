@@ -48,7 +48,7 @@ class PodCast {
       SELECT
         *
       FROM
-        podcast;
+        podcast ORDER BY id DESC;
     ";
 
     try {

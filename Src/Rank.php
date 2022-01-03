@@ -39,7 +39,7 @@ class Rank {
       SELECT
         *
       FROM
-        rank;
+        rank ORDER BY id DESC;
     ";
 
     try {

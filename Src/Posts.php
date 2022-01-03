@@ -48,7 +48,7 @@ class Posts {
       SELECT
        *
       FROM
-        posts;
+        posts ORDER BY id DESC;
     ";
 
     try {

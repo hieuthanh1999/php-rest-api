@@ -48,7 +48,7 @@ class Category {
       SELECT
         *
       FROM
-        category;
+        category ORDER BY id DESC;
     ";
 
     try {
